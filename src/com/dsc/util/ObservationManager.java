@@ -24,7 +24,6 @@ public class ObservationManager {
 		JSONObject retJson = new JSONObject();
 		Connection conn = null;
 		PreparedStatement  updatePS = null;
-		//ResultSet rs = null;
 		int obsInstId = -1;
 
 		String SQL = "update OBS_INST set  obs_inst_status = 'REVIEWED' where obs_inst_id = ?";
