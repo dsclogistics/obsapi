@@ -99,14 +99,71 @@ public class OpenReadybyid {
          if (jsonObject.has("filterby")) wsql=wsql +" and obs_inst_status='"+filterby +"' ";
         
          String wempid="";
-         if ((jsonObject.get("emp_id").toString().length()  > 0 )) wempid=" and  o.dsc_emp_id="+empid ;
+         String assignBldgClause = "";
+         if ((jsonObject.get("emp_id").toString().length()  > 0 ))
+         { 
+        	        	 
+        	 wempid=" and  o.dsc_emp_id="+empid; 
+        	 assignBldgClause =	 " union"
+                               +" select obs_cfi_id as ObsColFormInstID,"
+                               +" dsc_observed_emp_id ," 
+                               +" dsc_observer_emp_id, "
+							   +" case when obs_inst_status = 'COLLECTING'" 
+							   +" then 'OPEN' "
+							   +" when obs_inst_status ='COLLECTED'"
+							   +" then 'READY TO VERIFY'"
+							   +" else obs_inst_status"
+							   +" end as obs_inst_status,"
+							   +" d.[dsc_emp_first_name] as Observedfirst_name,"
+							   +" d.[dsc_emp_last_name] as Observedlast_name, "
+							   +" o.[dsc_emp_first_name] as Observerfirst_name,"
+							   +" o.[dsc_emp_last_name] as Observerlast_name,"
+							   +" d.dsc_emp_adp_id as ObservedADPID,"
+							   +" obs_cft_title as  ColFormTitle ,"
+							   +" case when lc.dsc_lc_timezone = 'ET' then dateadd(hour,1,obs_cfi_start_dt) "
+							   +" when lc.dsc_lc_timezone = 'PT' then dateadd(hour,-2,obs_cfi_start_dt)"
+                               +" else obs_cfi_start_dt end as ColFormStartDateTime,  "
+							   +" lc.dsc_lc_name as lcname,"
+							   +" case when lc.dsc_lc_timezone = 'ET' then dateadd(hour,1,b.obs_cfi_comp_date) "
+							   +" when lc.dsc_lc_timezone = 'PT' then dateadd(hour,-2,b.obs_cfi_comp_date)"
+                               +" else b.obs_cfi_comp_date end as completeddate"
+							   +" from obs_inst a  right join obs_collect_form_inst b"
+							   +" on a.obs_inst_id = b.obs_inst_id "
+							   +" right join dsc_employee o "
+							   +" on b.dsc_observer_emp_id = o.dsc_emp_id "
+							   +" right join obs_type c"
+							   +" on a.obs_type_id = c.obs_type_id "
+							   +" right join dsc_employee d  "
+							   +" on dsc_observed_emp_id= d.dsc_emp_id"
+							   +" right join obs_collect_form_tmplt q"
+							   +" on q.obs_cft_id = b.obs_cft_id"
+							   +" right join dsc_lc lc"
+							   +" on lc.dsc_lc_id = a.dsc_lc_id "
+							   +" where   obs_inst_del_yn ='N' "
+							   + wsql 
+							   +" and a.dsc_lc_id in (select OBS_EMP_ASSGND_LC.dsc_lc_id"
+							   						   + " from OBS_EMP_ASSGND_LC "
+							   						   + "where  OBS_EMP_ASSGND_LC.dsc_emp_id = "+empid+" )";
+
+ 
+ 
+ 
+     
+         }
 
    		  String SQL = " select obs_cfi_id as ObsColFormInstID, dsc_observed_emp_id ,dsc_observer_emp_id," +
 		 			   " case  when obs_inst_status = 'COLLECTING' then 'OPEN' when obs_inst_status ='COLLECTED' then 'READY TO VERIFY' "+
    				       " else obs_inst_status end as obs_inst_status,d.[dsc_emp_first_name] as Observedfirst_name," + 
 		               " d.[dsc_emp_last_name] as Observedlast_name, o.[dsc_emp_first_name] as Observerfirst_name, o.[dsc_emp_last_name] as Observerlast_name,"+
 		               " d.dsc_emp_adp_id as ObservedADPID,obs_cft_title as  ColFormTitle ,"+
-		               " obs_cfi_start_dt as ColFormStartDateTime,  lc.dsc_lc_name as lcname,b.obs_cfi_comp_date as completeddate "+
+		               " case when lc.dsc_lc_timezone = 'ET' "
+		               + " then dateadd(hour,1,obs_cfi_start_dt) "
+		               + " when lc.dsc_lc_timezone = 'PT' then dateadd(hour,-2,obs_cfi_start_dt)"
+		               + "  else obs_cfi_start_dt end as ColFormStartDateTime," 
+		               + " lc.dsc_lc_name as lcname,"
+		               + " case when lc.dsc_lc_timezone = 'ET' then dateadd(hour,1,b.obs_cfi_comp_date) "
+		               + " when lc.dsc_lc_timezone = 'PT' then dateadd(hour,-2,b.obs_cfi_comp_date)"
+		               + " else b.obs_cfi_comp_date end as completeddate "+
 		               " from obs_inst a "+
 		               " right join obs_collect_form_inst b on a.obs_inst_id = b.obs_inst_id "+
 			           " right join dsc_employee o on   b.dsc_observer_emp_id = o.dsc_emp_id  "+		               
@@ -115,12 +172,12 @@ public class OpenReadybyid {
 		            //   " right join dsc_employee d on b.dsc_observer_emp_id = d.dsc_emp_id " +
 		               " right join obs_collect_form_tmplt q on q.obs_cft_id = b.obs_cft_id "+
 		               " right join dsc_lc lc on lc.dsc_lc_id = a.dsc_lc_id "+
-		               " where   obs_inst_del_yn ='N'  " + wempid +wsql +
+		               " where   obs_inst_del_yn ='N'  " + wempid +wsql + assignBldgClause +
 		            //   -- and  d.dsc_emp_id="+empid + wsql +
-		               "  order by b.obs_cfi_comp_date desc , a.dsc_lc_id";		  		
+		               "  order by completeddate desc ";		  		
    	         
 	          
-  //System.out.println(">>> OPEN READYL:" + SQL);
+  System.out.println(">>> OPEN READYL:" + SQL);
 	        
 	          Statement stmt = conn.createStatement();
 	        //     System.out.println("statement connect done" );

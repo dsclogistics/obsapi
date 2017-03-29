@@ -65,7 +65,11 @@ public class viewcollform {
               
               nsql= "select de.dsc_emp_first_name +' '+de.dsc_emp_last_name as Observed_FullName, de.dsc_emp_adp_id," +
                     " ocfi.dsc_observer_emp_id as Observer, oi.dsc_observed_emp_id as Observed,dl.dsc_lc_name as  LocationName, "+
-            	    " ocfi.obs_cfi_comp_date as compdate, de1.dsc_emp_first_name +' '+de1.dsc_emp_last_name as Observer_FullName,"+
+            	    " case when dl.dsc_lc_timezone ='ET' then DATEADD(hour,1,ocfi.obs_cfi_comp_date) "
+            	    + " when dl.dsc_lc_timezone ='PT' then DATEADD(hour, -2,ocfi.obs_cfi_comp_date )"
+            	    + "  else ocfi.obs_cfi_comp_date end "
+            	    + "as compdate, "
+            	    + "de1.dsc_emp_first_name +' '+de1.dsc_emp_last_name as Observer_FullName,"+
             		"de1.dsc_emp_adp_id   from [dbo].[OBS_COLLECT_FORM_INST] ocfi "+
             		" left join [dbo].[OBS_INST] oi on  oi.obs_inst_id = ocfi.obs_inst_id "+  
             		" left join [dbo].[DSC_EMPLOYEE] de  on oi.dsc_observed_emp_id= de.dsc_emp_id "+  
@@ -73,11 +77,14 @@ public class viewcollform {
             		" left join [dbo].[DSC_LC] dl on dl.dsc_lc_id = oi.dsc_lc_id "+   
             		" where  ocfi.obs_cfi_id="+req_obs_cfi_id;
 
-    		  String SQL1 = "  select distinct   k.dsc_observed_emp_id as '1', "+
+/*    		  String SQL1 = "  select distinct   k.dsc_observed_emp_id as '1', "+
     				  	   " j.dsc_observer_emp_id as '2',  m.[dsc_emp_hire_dt] as '3' ,  "+
     				  	 " k.dsc_lc_id as '4',k.dsc_cust_id as '5',  j.obs_cft_id as '6', g.obs_cft_title   as '7',  "+
     				  	" '' as '8', '1' as '9',    j.obs_inst_id as '10',  "+
-    				  	" j.obs_cfi_id as '11', j.obs_cfi_start_dt as '12', "+
+    				  	" j.obs_cfi_id as '11', "
+    				  	+ "case when lc.dsc_lc_timezone ='ET' then DATEADD(hour,1,j.obs_cfi_start_dt) "
+    				  	+ "when lc.dsc_lc_timezone ='PT' then DATEADD(hour,-2,j.obs_cfi_start_dt) "
+    				  	+ "else j.obs_cfi_start_dt end  as '12',"+
     				  	"  case when k.obs_inst_status = 'COLLECTING' then 'Open' else 'Ready' end as '13' , "+
     				  	" e.obs_question_full_text as '14', l.obs_question_id as '15', "+
     				  	" l.obs_cfiq_quest_order as '16',l.obs_cfiq_form_sect_name as '17', "+
@@ -95,35 +102,39 @@ public class viewcollform {
     				  	" left join dbo.obs_ans_type p WITH (NOLOCK) on p.obs_ans_type_id = n.obs_ans_type_id " +
     				  	"  where j.obs_cfi_id=" +req_obs_cfi_id +
     				  	" and p.obs_ans_type_id = n.obs_ans_type_id " +
-    				  	" order by  l.obs_cfiq_quest_order ";
+    				  	" order by  l.obs_cfiq_quest_order ";*/
     		  
-  			String SQL=" select distinct   "+
-					" k.dsc_observed_emp_id as '1', "+
-	    			" j.dsc_observer_emp_id as '2',  m.[dsc_emp_hire_dt] as '3' ,  "+
-	    			" k.dsc_lc_id as '4',k.dsc_cust_id as '5',  j.obs_cft_id as '6', g.obs_cft_title   as '7',  "+
-	    			" '' as '8', '1' as '9',    j.obs_inst_id as '10',   "+
-	    		    " j.obs_cfi_id as '11', j.obs_cfi_start_dt as '12',  "+
-	    		    " case when k.obs_inst_status = 'COLLECTING' then 'Open' when k.obs_inst_status = 'COLLECTED' then 'Ready' else 'REVIEWED' end as '13', "+
-					" e.obs_question_full_text as '14', l.obs_question_id as '15',  "+
-	    		    " l.obs_cfiq_quest_order as '16',l.obs_cfiq_form_sect_name as '17', "+ 
-	    		    " l.obs_cfiq_form_sub_sect_name as '18' ,   "+
-	    	       "  case when l.obs_cfiq_na_yn = 'Y' then 'true' else 'false' end as '19', "+	    
-	    	// 5/25/2015	    " l.obs_cfiq_na_yn as '19', "+
-	    		    " l.obs_cfiq_quest_wgt as '20',l.obs_cfiq_comment as '21' "+		   
-			//				--   o.obs_qat_id as '23', p.obs_ans_type_api_tag_val as '24',n.obs_qat_id as '25'
-	    		    " , l.obs_cfiq_id as '22',l.obs_col_form_quest_id as '23',k.obs_inst_status as '24' " +
-			       " from [dbo].obs_collect_form_inst j  WITH (NOLOCK)  "+
-				   " left  join dbo.obs_col_form_inst_quest l WITH (NOLOCK) on l.obs_cfi_id = j.obs_cfi_id  "+
-				   " left join [dbo].[OBS_COLLECT_FORM_TMPLT] g WITH (NOLOCK) on g.obs_cft_id = j.obs_cft_id "+   
-			       " left join dbo.obs_inst k WITH (NOLOCK) on k.obs_inst_id = j.obs_inst_id  "+   
-			       " left join [dbo].[OBS_QUESTION] e WITH (NOLOCK) on l.obs_question_id = e.obs_question_id "+   
-			       " left join dbo.dsc_employee m WITH (NOLOCK) on m.dsc_emp_id = k.dsc_observed_emp_id "+
-  			     //  " left join dbo.obs_quest_ans_types n WITH (NOLOCK) on n.obs_question_id = l.obs_question_id  "+
-			     //  " left join dbo.obs_ans_type p WITH (NOLOCK) on p.obs_ans_type_id = n.obs_ans_type_id  "+  
-				  	"  where j.obs_cfi_id=" +req_obs_cfi_id +
-				  	" order by  l.obs_cfiq_quest_order ";	         
+    		  String SQL=" select distinct   "+
+  					" k.dsc_observed_emp_id as '1', "+
+  	    			" j.dsc_observer_emp_id as '2',  m.[dsc_emp_hire_dt] as '3' ,  "+
+  	    			" k.dsc_lc_id as '4',k.dsc_cust_id as '5',  j.obs_cft_id as '6', g.obs_cft_title   as '7',  "+
+  	    			" '' as '8', '1' as '9',    j.obs_inst_id as '10',   "+
+  	    		   // j.obs_cfi_start_dt as '12',  "
+  	    			" j.obs_cfi_id as '11', "+
+  	    		     "case when lc.dsc_lc_timezone ='ET' then DATEADD(hour,1,j.obs_cfi_start_dt) when lc.dsc_lc_timezone ='PT' then DATEADD(hour, -2,j.obs_cfi_start_dt ) else j.obs_cfi_start_dt end as '12', "+
+  	    		    " case when k.obs_inst_status = 'COLLECTING' then 'Open' when k.obs_inst_status = 'COLLECTED' then 'Ready' else 'REVIEWED' end as '13', "+
+  					" e.obs_question_full_text as '14', l.obs_question_id as '15',  "+
+  	    		    " l.obs_cfiq_quest_order as '16',l.obs_cfiq_form_sect_name as '17', "+ 
+  	    		    " l.obs_cfiq_form_sub_sect_name as '18' ,   "+
+  	    	       "  case when l.obs_cfiq_na_yn = 'Y' then 'true' else 'false' end as '19', "+	    
+  	    	// 5/25/2015	    " l.obs_cfiq_na_yn as '19', "+
+  	    		    " l.obs_cfiq_quest_wgt as '20',l.obs_cfiq_comment as '21' "+		   
+  			//				--   o.obs_qat_id as '23', p.obs_ans_type_api_tag_val as '24',n.obs_qat_id as '25'
+  	    		    " , l.obs_cfiq_id as '22',l.obs_col_form_quest_id as '23',k.obs_inst_status as '24' " +
+  			       " from [dbo].obs_collect_form_inst j  WITH (NOLOCK)  "+
+  				   " left  join dbo.obs_col_form_inst_quest l WITH (NOLOCK) on l.obs_cfi_id = j.obs_cfi_id  "+
+  				   " left join [dbo].[OBS_COLLECT_FORM_TMPLT] g WITH (NOLOCK) on g.obs_cft_id = j.obs_cft_id "+   
+  			       " left join dbo.obs_inst k WITH (NOLOCK) on k.obs_inst_id = j.obs_inst_id  "+   
+  			       " left join [dbo].[OBS_QUESTION] e WITH (NOLOCK) on l.obs_question_id = e.obs_question_id "+   
+  			       " left join dbo.dsc_employee m WITH (NOLOCK) on m.dsc_emp_id = k.dsc_observed_emp_id "
+  			       + " left join dsc_lc lc WITH (NOLOCK) on k.dsc_lc_id = lc.dsc_lc_id"+
+    			     //  " left join dbo.obs_quest_ans_types n WITH (NOLOCK) on n.obs_question_id = l.obs_question_id  "+
+  			     //  " left join dbo.obs_ans_type p WITH (NOLOCK) on p.obs_ans_type_id = n.obs_ans_type_id  "+  
+  				  	"  where j.obs_cfi_id=" +req_obs_cfi_id +
+  				  	" order by  l.obs_cfiq_quest_order ";	         
 	          
-	   // System.out.println("Show collection First SQL:" + nsql);
+	  /* System.out.println("Show collection First SQL:" + nsql);
+	   System.out.println(SQL);*/
 	
 		      String fullname1=null;
 		      String adpid1=null;

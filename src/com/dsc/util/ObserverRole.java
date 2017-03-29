@@ -61,7 +61,7 @@ public Response   ObserverRole (JSONObject jsonObject) throws JSONException {
 
 		  String SQL = " SELECT  c.*   FROM [dbo].[OBS_USER_AUTH] a, [dbo].[OBS_USER_ROLE] b, "+
 		               " [dbo].[OBS_ROLE] c where a.obs_user_auth_id = b.obs_user_auth_id and b.obs_role_id=c.obs_role_id "+
-		               " and obs_user_auth_dsc_ad_name='" +name +"'";
+		               " and obs_user_auth_dsc_ad_name='" +name +"' and a.obs_user_auth_active_yn = 'Y'";
         
          
        

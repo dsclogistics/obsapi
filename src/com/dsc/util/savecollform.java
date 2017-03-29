@@ -41,14 +41,6 @@ public class savecollform   {
     			return msg;
         	}
         	
-        	 if (instid.trim().length() >0)
-        	 {     		 
-        		// System.out.println("** SAVECOLLFORM OBSINSTID NOT NULL > 0 length received is:"+instid +" Collection FORM ID received is:"+colformid);
-        	 }
-        	 else
-        	 {
-        		 // System.out.println("** SAVECOLLFORM OBSINSTID IS NULL received is:"+instid +" Collection FORM ID received is:"+colformid);	 
-        	 }
         	 // if you have a valid OBSInstID then this is an existing Collection Instance else New Collection
         	
         	 if (instid.trim().length() >0)

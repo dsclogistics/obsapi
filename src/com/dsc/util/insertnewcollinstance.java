@@ -173,14 +173,29 @@ public class insertnewcollinstance {
  
 	    	    // INSERT INTO OBS_INST TABLE ********************************************
 	       
-	             String insert="insert into obs_inst values(" +  
+	            /* String insert="insert into obs_inst values(" +  
 	            		 obstypeid+","+lcid+","+custid  +
 	              ","+obdid+",'"+jsonObject.get("ColFormStartDateTime").toString().trim() +"','" +formstatus +"','N',null,'')";
-	             
+	             */
 
 		   	      // Insert Row into OBS_INST  1st step
+	             PreparedStatement getLCPS = null;
+	             String getLSquery = "select dsc_assigned_lc_id from dsc_employee where dsc_emp_id = ?";
 		    	    try 
 		    	    {
+		    	    	  
+		    	    	getLCPS =conn.prepareStatement(getLSquery);
+		    	    	getLCPS.setInt(1,obdid );
+		    	    	rs = getLCPS.executeQuery();
+		    	    	while(rs.next()){
+		    	    		lcid = rs.getInt("dsc_assigned_lc_id");
+		    	    		
+		    	    	}
+		    	    	getLCPS.close();
+		    	    	rs.close();
+		    	    	String insert="insert into obs_inst values(" +  
+		 	            		 obstypeid+","+lcid+","+custid  +
+		 	              ","+obdid+",'"+jsonObject.get("ColFormStartDateTime").toString().trim() +"','" +formstatus +"','N',null,'')";
 		    	    	 
 		    	    	PreparedStatement ps = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		    	        ps.executeUpdate();

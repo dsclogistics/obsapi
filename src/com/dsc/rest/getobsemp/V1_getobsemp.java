@@ -390,7 +390,7 @@ public class V1_getobsemp   {
   		 result.put("apircvddtm",sdate);
   		 result.put("apisentdtm",edate);
   		 result.put("jsoninput",inputJsonObj);
-  		 result.put("resname","obs_NewCollform ");
+  		 result.put("resname","obsgetNewColform ");
   		// System.out.println("**** NEW ADDED DATA obsgetNewColform result json:"+result.toString());	
       	APIEvent R1 = new APIEvent(result);
          R1.start();
@@ -474,7 +474,7 @@ public class V1_getobsemp   {
   		 result.put("apircvddtm",sdate);
   		 result.put("apisentdtm",edate);
   		 result.put("jsoninput",jsonObject);
-  		 result.put("resname","obs_Save");
+  		 result.put("resname","obsSave");
   //		 System.out.println("**** NEW ADDED DATA DSCAuthenticationSrv result json:"+result.toString());	
       	APIEvent R1 = new APIEvent(result);
          R1.start();
@@ -520,7 +520,7 @@ public class V1_getobsemp   {
   		 result.put("apircvddtm",sdate);
   		 result.put("apisentdtm",edate);
   		 result.put("jsoninput",inputJsonObj);
-  		 result.put("resname","obs_getCollform");
+  		 result.put("resname","obsgetCollform");
  // 		 System.out.println("**** NEW ADDED DATA DSCAuthenticationSrv result json:"+result.toString());	
       	APIEvent R1 = new APIEvent(result);
          R1.start();
@@ -602,7 +602,7 @@ public class V1_getobsemp   {
      		  result.put("apircvddtm",sdate);
      		 result.put("apisentdtm",edate);
      		 result.put("jsoninput",inputJsonObj);
-     		 result.put("resname","obs_getCollform");
+     		 result.put("resname","obs_delCollform");
    //  		 System.out.println("**** NEW ADDED DATA getcollform result json:"+result.toString());	
          	APIEvent R1 = new APIEvent(result);
             R1.start();
@@ -640,7 +640,7 @@ public class V1_getobsemp   {
      		  result.put("apircvddtm",sdate);
      		 result.put("apisentdtm",edate);
      		 result.put("jsoninput",inputJsonObj);
-     		 result.put("resname","obs_getCollform");
+     		 result.put("resname","obs_delCollform");
  //    		 System.out.println("**** NEW ADDED DATA getcollform result json:"+result.toString());	
          	APIEvent R1 = new APIEvent(result);
             R1.start();
@@ -703,7 +703,7 @@ public class V1_getobsemp   {
      		  result.put("apircvddtm",sdate);
      		 result.put("apisentdtm",edate);
      		 result.put("jsoninput",inputJsonObj);
-     		 result.put("resname","openreadybyid");
+     		 result.put("resname","observerrole");
  //    		 System.out.println("**** NEW ADDED DATA getcollform result json:"+result.toString());	
   //       	APIEvent R1 = new APIEvent(result);
   //          R1.start();
