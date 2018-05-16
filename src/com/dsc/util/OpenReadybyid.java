@@ -179,17 +179,48 @@ public class OpenReadybyid {
 	          
   System.out.println(">>> OPEN READYL:" + SQL);
 	        
-	          Statement stmt = conn.createStatement();
+	          Statement stmt = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, 
+	        		    ResultSet.CONCUR_READ_ONLY);
 	        //     System.out.println("statement connect done" );
 			      // do starts here
+	         
+	          
 			        ResultSet rs = stmt.executeQuery(SQL);
 			        ResultSetMetaData rsmd = rs.getMetaData();
-			//        System.out.println("result set created" );
+			        int numColumns = rsmd.getColumnCount(); 
+			        
+			        int size = 0;
+			        rs.last();
+			        size = rs.getRow();
+			        System.out.println("Total Rows "+size);
+			        rs.beforeFirst();
+			        int first = 0;
+			        int last = size;
+			        if(jsonObject.has("page_size")&&jsonObject.has("first_record")){
+			        	first = jsonObject.getInt("first_record");
+			        	last = first+jsonObject.getInt("page_size")>=size?size:first+jsonObject.getInt("page_size");
+			        	
+			        }
 
-					int numColumns = rsmd.getColumnCount(); 
-					while (rs.next()) {
+					int current = 0;
+					//System.out.println("First: "+first+" Last: "+last);
+					while(rs.next()){
+						//for(int j=first;j<last;j++)
+						if(current>=first&current<last){
+						JSONObject obj = new JSONObject();						
+						for (int i=1; i<numColumns+1; i++) {
+					        String column_name = rsmd.getColumnName(i);
+	 
+					          obj.put(column_name, rs.getString(i));
+		  				} // for numcolumns
+						 json.put(obj);
+						}//end of if(current>=first&current<last)
+						current++;
+					}// end of while(rs.next())
+					/*while (rs.next()) {
 
 					JSONObject obj = new JSONObject();
+					
 
 					for (int i=1; i<numColumns+1; i++) {
 				        String column_name = rsmd.getColumnName(i);
@@ -198,6 +229,8 @@ public class OpenReadybyid {
 	  				} // for numcolumns
 					 json.put(obj);
 					} // while loop
+*/										
+					obj1.put("total", size);
 	 
 			              rs.close();
 			             stmt.close();
